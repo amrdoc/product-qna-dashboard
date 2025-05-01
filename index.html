@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -6,16 +5,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>قاعدة بيانات الاستفسارات</title>
     <style>
-        body { font-family: Arial, sans-serif; direction: rtl; padding: 20px; background-color: #f8f9fa; }
-        input, select { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; }
-        .card { border: 1px solid #ddd; background-color: #fff; padding: 15px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .download { color: #007bff; text-decoration: none; font-weight: bold; }
-        .download:hover { text-decoration: underline; }
+        body {
+            font-family: 'Cairo', Arial, sans-serif;
+            direction: rtl;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #212529;
+            transition: all 0.3s ease;
+            max-width: 900px;
+            margin: auto;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        .download {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .download:hover {
+            background-color: #0056b3;
+        }
+        #darkToggle {
+            margin-bottom: 20px;
+            cursor: pointer;
+            background-color: #343a40;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+        body.dark {
+            background-color: #121212;
+            color: #f8f9fa;
+        }
+        body.dark .card {
+            background-color: #1e1e1e;
+            border-color: #333;
+        }
+        body.dark input, body.dark select {
+            background-color: #222;
+            color: #f8f9fa;
+            border-color: #444;
+        }
+        body.dark .download {
+            background-color: #28a745;
+        }
+        #logo-dark {
+            display: none;
+            max-height: 80px;
+            margin-bottom: 15px;
+        }
+        #logo-light {
+            max-height: 80px;
+            margin-bottom: 15px;
+        }
+        body.dark #logo-dark {
+            display: block;
+        }
+        body.dark #logo-light {
+            display: none;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #ccc;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
-    <h1>📋 قاعدة بيانات الاستفسارات</h1>
+    <img src="Logo.png" id="logo-light" alt="Logo Light">
+    <img src="Logo_.png" id="logo-dark" alt="Logo Dark">
 
+    <h1>📋 قاعدة بيانات الاستفسارات</h1>
+    <button id="darkToggle" onclick="toggleDark()">🌙 الوضع الليلي / ☀️ النهاري</button>
     <input type="text" id="search" placeholder="ابحث بالكلمة..." onkeyup="filterCards()">
     <select id="productFilter" onchange="filterCards()">
         <option value="">فلتر حسب المنتج</option>
@@ -35,7 +118,6 @@
             .then(data => {
                 allData = data;
                 populateFilters(data);
-                // لا نعرض أي بيانات في البداية
                 document.getElementById("data-container").innerHTML = "<p>يرجى استخدام البحث أو الفلاتر لعرض النتائج.</p>";
             });
 
@@ -76,6 +158,11 @@
                 );
             });
 
+            if (query === "" && productFilter === "" && categoryFilter === "") {
+                container.innerHTML = "<p>يرجى استخدام البحث أو الفلاتر لعرض النتائج.</p>";
+                return;
+            }
+
             if (filtered.length === 0) {
                 container.innerHTML = "<p>لا توجد نتائج مطابقة.</p>";
             } else {
@@ -83,16 +170,20 @@
                     const card = document.createElement("div");
                     card.className = "card";
                     card.innerHTML = `
-                        <p><strong>التاريخ:</strong> ${item.timestamp || ""}</p>
-                        <p><strong>المنتج:</strong> ${item.product || ""}</p>
-                        <p><strong>السؤال:</strong> ${item.question || ""}</p>
-                        <p><strong>الإجابة:</strong> ${item.answer || ""}</p>
+                        <p><strong>التاريخ:</strong> ${item.timestamp || ""}</p><hr>
+                        <p><strong>المنتج:</strong> ${item.product || ""}</p><hr>
+                        <p><strong>السؤال:</strong> ${item.question || ""}</p><hr>
+                        <p><strong>الإجابة:</strong> ${item.answer || ""}</p><hr>
                         <p><strong>التصنيف:</strong> ${item.category || ""}</p>
                         ${item.document_link ? `<a href="${item.document_link}" target="_blank" class="download">📎 تحميل الملف</a>` : ""}
                     `;
                     container.appendChild(card);
                 });
             }
+        }
+
+        function toggleDark() {
+            document.body.classList.toggle("dark");
         }
     </script>
 </body>
